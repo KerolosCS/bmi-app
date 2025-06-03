@@ -19,7 +19,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/", response_class=HTMLResponse)
 async def serve_homepage():
     try:
-        with open("static/index.html", "r") as file:
+        with open("static/index.html", "r",encoding="utf-8") as file:
             return HTMLResponse(content=file.read(), status_code=200)
     except FileNotFoundError:
         return HTMLResponse(content="<h1>404 - Page Not Found</h1>", status_code=404)

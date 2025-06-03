@@ -1,109 +1,327 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BMI Calculator</title>
+  <title>حاسبة مؤشر كتلة الجسم</title>
   <style>
+    :root {
+      --primary: #4CAF50;
+      --primary-dark: #45a049;
+      --secondary: #ACB6E5;
+      --text: #333;
+      --text-light: #555;
+      --error: #e74c3c;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(120deg, #74ebd5, #ACB6E5);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      line-height: 1.6;
     }
 
-    .card {
+    .container {
+      display: flex;
+      max-width: 900px;
+      width: 90%;
       background-color: #fff;
-      padding: 30px 40px;
       border-radius: 16px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    .calculator-section {
+      padding: 40px;
+      width: 50%;
+    }
+
+    .info-section {
+      padding: 40px;
+      width: 50%;
+      background-color: #f9f9f9;
+      color: var(--text);
     }
 
     h2 {
       margin-bottom: 24px;
-      color: #333;
+      color: var(--primary);
+      font-size: 28px;
+      position: relative;
+    }
+
+    h2:after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      right: 0;
+      width: 50px;
+      height: 3px;
+      background-color: var(--primary);
+    }
+
+    h3 {
+      color: var(--primary);
+      margin-top: 25px;
+      margin-bottom: 15px;
     }
 
     label {
       display: block;
       margin-top: 15px;
-      margin-bottom: 5px;
-      color: #555;
-      text-align: left;
+      margin-bottom: 8px;
+      color: var(--text-light);
+      text-align: right;
+      font-weight: 500;
     }
 
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       border: 2px solid #ddd;
       border-radius: 8px;
       font-size: 16px;
+      transition: border 0.3s;
+      text-align: right;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      outline: none;
     }
 
     button {
-      margin-top: 20px;
-      background-color: #4CAF50;
+      margin-top: 25px;
+      background-color: var(--primary);
       color: white;
-      padding: 12px 18px;
+      padding: 14px 24px;
       border: none;
       border-radius: 8px;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      width: 100%;
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     #result {
-      margin-top: 20px;
-      font-weight: bold;
-      color: #333;
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .bmi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .bmi-category {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    .bmi-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      text-align: right;
+    }
+
+    .bmi-table th, .bmi-table td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .bmi-table th {
+      background-color: #f2f2f2;
+    }
+
+    .bmi-table tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .info-item {
+      margin-bottom: 20px;
+    }
+
+    .info-item p {
+      margin: 8px 0;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .calculator-section, .info-section {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>BMI Calculator</h2>
-    <form id="bmiForm">
-      <label for="weight">Weight (kg):</label>
-      <input type="number" id="weight" name="weight" required step="0.1" min="21" max="200">
+  <div class="container">
+    <div class="calculator-section">
+      <h2>حاسبة مؤشر كتلة الجسم</h2>
+      <form id="bmiForm">
+        <label for="weight">الوزن (كجم):</label>
+        <input type="number" id="weight" name="weight" required step="0.1" min="20" max="200" placeholder="مثال: 68.5">
 
-      <label for="height">Height (m):</label>
-      <input type="number" id="height" name="height" required step="0.01" min="1.01" max="3">
+        <label for="height">الطول (متر):</label>
+        <input type="number" id="height" name="height" required step="0.01" min="1.20" max="2.50" placeholder="مثال: 1.75">
 
-      <button type="submit">Calculate</button>
-    </form>
-    <div id="result"></div>
+        <button type="submit">احسب مؤشر كتلة الجسم</button>
+      </form>
+      <div id="result"></div>
+    </div>
+
+    <div class="info-section">
+      <h2>معلومات عن مؤشر كتلة الجسم</h2>
+
+      <div class="info-item">
+        <h3>ما هو مؤشر كتلة الجسم؟</h3>
+        <p>مؤشر كتلة الجسم (BMI) هو مقياس يستخدم لتقييم إذا كان وزن الشخص مناسب لطوله. يتم حسابه بقسمة الوزن بالكيلوجرام على مربع الطول بالمتر.</p>
+      </div>
+
+      <div class="info-item">
+        <h3>فئات مؤشر كتلة الجسم</h3>
+        <table class="bmi-table">
+          <tr>
+            <th>الفئة</th>
+            <th>معدل المؤشر</th>
+          </tr>
+          <tr>
+            <td>نقص في الوزن</td>
+            <td>أقل من 18.5</td>
+          </tr>
+          <tr>
+            <td>وزن طبيعي</td>
+            <td>18.5 - 24.9</td>
+          </tr>
+          <tr>
+            <td>زيادة في الوزن</td>
+            <td>25.0 - 29.9</td>
+          </tr>
+          <tr>
+            <td>سمنة</td>
+            <td>30.0 فأكثر</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="info-item">
+        <h3>محاذير الاستخدام</h3>
+        <p>رغم فائدة مؤشر كتلة الجسم، إلا أن له بعض القيود:</p>
+        <p>• لا يقيس نسبة الدهون مباشرة</p>
+        <p>• لا يأخذ في الاعتبار كتلة العضلات</p>
+        <p>• قد لا يكون دقيقاً للرياضيين أو كبار السن</p>
+      </div>
+
+      <div class="info-item">
+        <h3>نصائح للوزن الصحي</h3>
+        <p>• تناول نظام غذائي متوازن غني بالفواكه والخضروات</p>
+        <p>• مارس النشاط البدني بانتظام (150+ دقيقة أسبوعياً)</p>
+        <p>• احصل على قسط كافٍ من النوم (7-9 ساعات يومياً)</p>
+        <p>• تحكم في التوتر عبر تقنيات الاسترخاء</p>
+      </div>
+    </div>
   </div>
 
   <script>
     document.getElementById("bmiForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-      const weight = document.getElementById("weight").value;
-      const height = document.getElementById("height").value;
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
 
-      const url = `/calculate_bmi?weight=${encodeURIComponent(weight)}&height=${encodeURIComponent(height)}`;
+      // التحقق من صحة البيانات
+      if (isNaN(weight)) {
+        showError("الرجاء إدخال وزن صحيح");
+        return;
+      }
 
-      const response = await fetch(url, { method: "POST" });
+      if (isNaN(height)) {
+        showError("الرجاء إدخال طول صحيح");
+        return;
+      }
 
-      const resultDiv = document.getElementById("result");
+      if (weight < 20 || weight > 200) {
+        showError("يجب أن يكون الوزن بين 20 كجم و 200 كجم");
+        return;
+      }
 
-      if (response.ok) {
-        const data = await response.json();
-        resultDiv.innerHTML = `BMI: <strong>${data.BMI.toFixed(2)}</strong><br>Message: ${data.Message}`;
-      } else {
-        const error = await response.json();
-        resultDiv.innerHTML = `<span style="color:red;">Error: ${error.detail}</span>`;
+      if (height < 1.2 || height > 2.5) {
+        showError("يجب أن يكون الطول بين 1.20 متر و 2.50 متر");
+        return;
+      }
+
+      try {
+        const bmi = weight / (height * height);
+        let message = "";
+
+        if (bmi < 18.5) {
+          message = "نقص في الوزن";
+        } else if (bmi >= 18.5 && bmi < 25) {
+          message = "وزن طبيعي";
+        } else if (bmi >= 25 && bmi < 30) {
+          message = "زيادة في الوزن";
+        } else {
+          message = "سمنة";
+        }
+
+        displayResult(bmi, message);
+      } catch (error) {
+        showError("حدث خطأ. الرجاء المحاولة مرة أخرى.");
       }
     });
+
+    function displayResult(bmi, message) {
+      const resultDiv = document.getElementById("result");
+
+      // تحديد اللون حسب قيمة المؤشر
+      let colorClass = '';
+      if (bmi < 18.5) {
+        colorClass = 'color: #3498db;'; // أزرق لنقص الوزن
+      } else if (bmi >= 18.5 && bmi < 25) {
+        colorClass = 'color: #2ecc71;'; // أخضر للوزن الطبيعي
+      } else if (bmi >= 25 && bmi < 30) {
+        colorClass = 'color: #f39c12;'; // برتقالي لزيادة الوزن
+      } else {
+        colorClass = 'color: #e74c3c;'; // أحمر للسمنة
+      }
+
+      resultDiv.innerHTML = `
+        <div class="bmi-value" style="${colorClass}">${bmi.toFixed(1)}</div>
+        <div class="bmi-category" style="${colorClass}">${message}</div>
+        <p>فئات مؤشر كتلة الجسم:<br>
+        نقص في الوزن: أقل من 18.5<br>
+        وزن طبيعي: 18.5 - 24.9<br>
+        زيادة في الوزن: 25 - 29.9<br>
+        سمنة: 30 فأكثر</p>
+      `;
+      resultDiv.style.backgroundColor = '#f8f9fa';
+    }
+
+    function showError(message) {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `<span style="color: var(--error);">${message}</span>`;
+      resultDiv.style.backgroundColor = 'transparent';
+    }
   </script>
 </body>
 </html>
